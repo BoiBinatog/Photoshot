@@ -6,22 +6,27 @@
   <title>Photobooth</title>
   <style>
   body {
-    margin: 0;
-    background: #2c2e46;
-    font-family: Arial, sans-serif;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    height: 100vh;
-    overflow: hidden;
-  }
+  margin: 0;
+  background: #2c2e46;
+  font-family: Arial, sans-serif;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;     
+  align-items: center;         
+  min-height: 100vh;           
+}
 
-  .photobooth {
-    display: flex;
-    gap: 20px;
-    align-items: center;
-  }
+
+.photobooth {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  justify-content: center;     
+  width: 100%;
+  max-width: 1400px;           
+  margin: 0 auto;              
+}
+
 
   video, canvas {
     width: auto;
@@ -32,6 +37,20 @@
     position: relative;
     transform: scaleX(-1);
   }
+
+  /*setion-timer{
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    padding: 10px 15px;
+    background: rgba(0,0,0,0.7);
+    color: white;
+    border-radius: 6px;
+    font-size: 18px;
+    font-weight: bold;
+    z-index: 9999;
+  }*/
+
 
   #countdown {
     position: absolute;
@@ -47,47 +66,35 @@
   }
 
   .strip-container {
-    position: relative;
-    width: 250px;   
-    height: 600px;
-  }
+  position: relative;
+  width: 280px;     
+  height: 650px;    
+  display: flex;
+  justify-content: center;
+  border: none;
+}
 
-  .strip-frame {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 112%;
-    pointer-events: none;
-    z-index: 1;
-  }
 
-  .photos {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-  }
+.photos img {
+  position: absolute;
+  width: 75%;
+  height: 22%;  
+  object-fit: cover;
+  left: 12.5%;
+  background: #111;
+  border: none;  
+  border-radius: 4px;
+  z-index: 2;
+}
 
-  .photos img {
-    position: absolute;
-    left: 17.7px;         
-    width: 215px;       
-    height: 146px;      
-    object-fit: cover;
-    border-radius: 2px;
-    background: #111;
-    overflow: hidden;
-    z-index: 2;
-  }
+#slot1 { top: 3%; }
+#slot2 { top: 27%; }
+#slot3 { top: 51%; }
+#slot4 { top: 75%; }
 
-  #slot1 { top: 91.3px; }   
-  #slot2 { top: 244.7px; }
-  #slot3 { top: 396.2px; }
 
   .controls {
-    margin-top: 1px;
+    
     margin-right: 220px;
     display: flex;
     gap: 20px;
@@ -102,20 +109,26 @@
     color: white;
     font-family: "Brush Script MT", cursive;  
   }
-  .start { 
-    background: #70c5d3;
-  }
-  .print { 
-    background: #357388; 
-  }
-  .restart { 
-    background: #d62828; 
-  }
+  .start {background: #70c5d3;}
+  .print {background: #357388;}
+  .restart {background: #d62828;}
   
   </style>
 </head>
 <body>
- 
+ <!-- <div id="session-timer" style="
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  padding: 10px 15px;
+  background: rgba(0,0,0,0.7);
+  color: white;
+  border-radius: 6px;
+  font-size: 18px;
+  font-weight: bold;
+  z-index: 9999;">
+</div> -->
+
   <div class="photobooth">
     <div class="preview" style="position:relative;">
       <video id="video" autoplay></video>
@@ -125,11 +138,11 @@
     
     
     <div class="strip-container">
-      <img src="3pcs.png" alt="Photo Frame" class="strip-frame"> 
       <div class="photos" id="photo-strip">
-          <img id="slot1" alt="Photo 1">
-          <img id="slot2" alt="Photo 2">
-          <img id="slot3" alt="Photo 3">
+          <img id="slot1">
+          <img id="slot2">
+          <img id="slot3">
+          <img id="slot4">
         </div>
       </div>
   </div>
@@ -170,6 +183,7 @@
     })
     .catch(err => console.error("Camera error:", err));
 
+    // object-fit: cover
     function drawCover(ctx, img, dx, dy, dWidth, dHeight) {
       const imgRatio = img.width / img.height;
       const boxRatio = dWidth / dHeight;
@@ -177,13 +191,13 @@
       let sx, sy, sWidth, sHeight;
 
       if (imgRatio > boxRatio) {
-        // wider → crop sides
+        // crop sides
         sHeight = img.height;
         sWidth = sHeight * boxRatio;
         sx = (img.width - sWidth) / 2;
         sy = 0;
       } else {
-        // taller → crop top/bottom
+        // crop top/bottom
         sWidth = img.width;
         sHeight = sWidth / boxRatio;
         sx = 0;
@@ -230,7 +244,7 @@
     async function startCapture() {
       capturedImages = [];
       clearSlots();
-      for (let i = 0; i < 3; i++) {
+      for (let i = 0; i < 4; i++) {
         await showCountdown(5); 
         let imgUrl = takePhoto();
         capturedImages.push(imgUrl);
@@ -257,56 +271,87 @@
       });
     }
   
-    function clearSlots() {
-      for (let i = 1; i <= 3; i++) {
-        document.getElementById(`slot${i}`).src = "";
-      }
-    }
+function clearSlots() {
+  for (let i = 1; i <= 4; i++) {
+    document.getElementById(`slot${i}`).removeAttribute("src");
+  }
+}
   
-    function buildFinalStrip(callback) {
-      const stripWidth = 600;
-      const stripHeight = 1800;
-  
-      fctx.fillStyle = "white";
-      fctx.fillRect(0, 0, finalCanvas.width, finalCanvas.height);
-  
-      let frame = new Image();
-      frame.src = "3pcs.png";
-      
-  
-      frame.onload = () => {
-          let totalLoads = capturedImages.length * 2;
-          let loaded = 0;
-  
-          for (let s = 0; s < 2; s++) {
-            let xOffset = s * stripWidth;
-            fctx.drawImage(frame, xOffset, 0, stripWidth, stripHeight);
-  
-            capturedImages.forEach((src, i) => {
-              let img = new Image();
-              img.src = src;
-              img.onload = () => {
-                let photoW = 513.3; 
-                let photoH = 390.5;
-                let spacing = 18.5;
-                let yOffset = 244 + i * (photoH + spacing);
-  
-                // use drawCover instead of drawImage
-                drawCover(fctx, img, xOffset + 43.2, yOffset, photoW, photoH);
-  
-                loaded++;
-                if (loaded === totalLoads) {  
-                  fctx.fillStyle = "#888";
-                  fctx.fillRect(stripWidth - 1, 0, 2, stripHeight);
-  
-                  callback();
-                }
-              };
-            });
-          }
-        };
+function buildFinalStrip(callback) {
+  // ✔ 5R print size (your modified orientation)
+  const finalWidth = 1800;   
+  const finalHeight = 1200;  
+
+  finalCanvas.width = finalWidth;
+  finalCanvas.height = finalHeight;
+
+  // Load frame + icons first
+  let frame = new Image();
+  let icons = new Image();
+
+  frame.src = "5rFrame.png";
+  // icons.src = "5rIcons.png";
+
+  let assetsLoaded = 0;
+  function checkAssets() {
+    assetsLoaded++;
+    if (assetsLoaded === 2) drawPhotos();
+  }
+
+  frame.onload = checkAssets;
+  icons.onload = checkAssets;
+
+  // Draw everything only after assets load
+  function drawPhotos() {
+    // Draw frame BACKGROUND
+    fctx.drawImage(frame, 0, 0, finalWidth, finalHeight);
+
+    // SLOT SIZES
+    const slot1W = 1005;
+    const slot1H = 737;
+
+    const slotW = 560;
+    const slotH = 373;
+
+    // SLOT POSITIONS
+    const margin = 30;
+
+    // Slot 1 = TOP RIGHT
+    const slot1X = finalWidth - slot1W - margin;
+    const slot1Y = margin;
+
+    // Bottom row
+    const bottomY = finalHeight - slotH - margin;
+
+    const slot2X = margin;
+    const slot3X = slot2X + slotW + margin;
+    const slot4X = slot3X + slotW + margin;
+
+    let loaded = 0;
+
+    function place(src, x, y, w, h) {
+      let img = new Image();
+      img.src = src;
+      img.onload = () => {
+        drawCover(fctx, img, x, y, w, h);
+        loaded++;
+        if (loaded === 4) {
+          // AFTER photos, draw icons overlay
+          fctx.drawImage(icons, 0, 0, finalWidth, finalHeight);
+          callback();
+        }
       };
-    
+    }
+
+    // Draw 4 photos
+    place(capturedImages[0], slot1X, slot1Y, slot1W, slot1H);
+    place(capturedImages[0], slot2X, bottomY, slotW, slotH);
+    place(capturedImages[1], slot3X, bottomY, slotW, slotH);
+    place(capturedImages[2], slot4X, bottomY, slotW, slotH);
+  }
+}
+
+
   
     function printStrip() {
       buildFinalStrip(() => {
@@ -322,6 +367,59 @@
       capturedImages = [];
       clearSlots();
     }
+    /* 10-HOUR 
+let HOURS = 10;  // you can change this anytime
+let durationMS = HOURS * 60 * 60 * 1000;
+
+let endTime = localStorage.getItem("boothEndTime");
+const timerBox = document.getElementById("session-timer");
+
+function startSessionTimer() {
+  // If timer was never started, begin a new session
+  if (!endTime) {
+    endTime = Date.now() + durationMS;
+    localStorage.setItem("boothEndTime", endTime);
+  }
+  runSessionTimer();
+}
+
+function runSessionTimer() {
+  let timerInterval = setInterval(() => {
+    const now = Date.now();
+    let remaining = endTime - now;
+
+    if (remaining <= 0) {
+      clearInterval(timerInterval);
+      localStorage.removeItem("boothEndTime");
+      timerBox.textContent = "Session Expired";
+
+      // LOCK THE BOOTH
+      endBoothSession();
+      return;
+    }
+
+    // Convert time
+    let hours = Math.floor(remaining / (1000 * 60 * 60));
+    let minutes = Math.floor((remaining % (1000 * 60 * 60)) / (1000 * 60));
+    let seconds = Math.floor((remaining % (1000 * 60)) / 1000);
+
+    timerBox.textContent = `${hours}h ${minutes}m ${seconds}s`;
+  }, 1000);
+}
+
+function endBoothSession() {
+  document.body.innerHTML = `
+    <div style="font-size:45px; color:white; text-align:center; margin-top:20%;">
+      SESSION TIME LIMIT REACHED
+      <br><br>
+      Please call the operator.
+    </div>
+  `;
+}
+
+// Start timer when the page loads
+startSessionTimer(); */
+
   </script>
   
 </body>
