@@ -16,27 +16,35 @@
   min-height: 100vh;           
 }
 
-
 .photobooth {
   display: flex;
   gap: 20px;
   align-items: center;
   justify-content: center;     
   width: 100%;
-  max-width: 1400px;           
+  max-width: 100%;           
   margin: 0 auto;              
 }
 
 
   video, canvas {
     width: auto;
-    height: 80vh;
+    height: 70vh;
     background: black;
     border-radius: 25px;
     object-fit: cover;
     position: relative;
     transform: scaleX(-1);
   }
+  
+html, body {
+  margin: 0;
+  width: 100%;
+  height: 100%;
+  background: #2c2e46;
+  overflow: hidden;
+  user-select: none;
+}
 
   /*setion-timer{
     position: fixed;
@@ -100,15 +108,15 @@
     gap: 20px;
   }
 
-  .controls button {
-    padding: 10px 35px;
-    border: none;
-    border-radius: 30px;
-    font-size: 18px;
-    cursor: pointer;
-    color: white;
-    font-family: "Brush Script MT", cursive;  
-  }
+.controls button {
+  min-width: 180px;
+  min-height: 64px;
+  font-size: 22px;
+  color: #ffffff;
+  border-radius: 30px;
+  cursor: pointer;
+}
+
   .start {background: #70c5d3;}
   .print {background: #357388;}
   .restart {background: #d62828;}
@@ -131,8 +139,8 @@
 
   <div class="photobooth">
     <div class="preview" style="position:relative;">
-      <video id="video" autoplay></video>
-      <canvas id="canvas" width="700" height="500" hidden></canvas>
+        <video id="video" autoplay></video>
+        <canvas id="canvas" width="700" height="500" hidden></canvas>
       <div id="countdown"></div>
     </div>
     
@@ -146,7 +154,7 @@
         </div>
       </div>
   </div>
-
+     
   <div class="controls">
     <button class="start" onclick="startCapture()">Start</button>
     <button class="print" onclick="printStrip()">Save</button>
@@ -290,7 +298,7 @@ function buildFinalStrip(callback) {
   let icons = new Image();
 
   frame.src = "5rFrame.png";
-  icons.src = "5rIcons.png";
+  icons.src = "5rIcons.png"; 
 
   let assetsLoaded = 0;
   function checkAssets() {
@@ -367,60 +375,6 @@ function buildFinalStrip(callback) {
       capturedImages = [];
       clearSlots();
     }
-    /* ───────────────────────────────
-    10-HOUR PERSISTENT TIMER
-──────────────────────────────── 
-let HOURS = 10;  // you can change this anytime
-let durationMS = HOURS * 60 * 60 * 1000;
-
-let endTime = localStorage.getItem("boothEndTime");
-const timerBox = document.getElementById("session-timer");
-
-function startSessionTimer() {
-  // If timer was never started, begin a new session
-  if (!endTime) {
-    endTime = Date.now() + durationMS;
-    localStorage.setItem("boothEndTime", endTime);
-  }
-  runSessionTimer();
-}
-
-function runSessionTimer() {
-  let timerInterval = setInterval(() => {
-    const now = Date.now();
-    let remaining = endTime - now;
-
-    if (remaining <= 0) {
-      clearInterval(timerInterval);
-      localStorage.removeItem("boothEndTime");
-      timerBox.textContent = "Session Expired";
-
-      // LOCK THE BOOTH
-      endBoothSession();
-      return;
-    }
-
-    // Convert time
-    let hours = Math.floor(remaining / (1000 * 60 * 60));
-    let minutes = Math.floor((remaining % (1000 * 60 * 60)) / (1000 * 60));
-    let seconds = Math.floor((remaining % (1000 * 60)) / 1000);
-
-    timerBox.textContent = `${hours}h ${minutes}m ${seconds}s`;
-  }, 1000);
-}
-
-function endBoothSession() {
-  document.body.innerHTML = `
-    <div style="font-size:45px; color:white; text-align:center; margin-top:20%;">
-      SESSION TIME LIMIT REACHED
-      <br><br>
-      Please call the operator.
-    </div>
-  `;
-}
-
-// Start timer when the page loads
-startSessionTimer(); */
 
   </script>
   
